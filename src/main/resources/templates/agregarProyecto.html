@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Agregar / Editar Proyecto</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e1e2e 0%, #2d3748 100%);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background elements */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 20%;
+      right: 10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: float 6s ease-in-out infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    header {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(139, 92, 246, 0.9) 100%);
+      backdrop-filter: blur(20px);
+      color: #fff;
+      padding: 30px 20px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .header-subtitle {
+      margin-top: 8px;
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 400;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 40px auto;
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 60px rgba(59, 130, 246, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 1;
+      transform: translateY(0);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-5px);
+      box-shadow: 
+        0 30px 50px rgba(0, 0, 0, 0.4),
+        0 0 80px rgba(59, 130, 246, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 25px;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #e2e8f0;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 16px 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px solid rgba(71, 85, 105, 0.5);
+      border-radius: 12px;
+      font-size: 16px;
+      color: #f8fafc;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #64748b;
+      font-weight: 400;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 
+        0 0 0 3px rgba(59, 130, 246, 0.1),
+        0 0 20px rgba(59, 130, 246, 0.2);
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    input:hover,
+    textarea:hover {
+      border-color: rgba(71, 85, 105, 0.8);
+    }
+
+    button {
+      width: 100%;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+      margin-top: 10px;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 25px;
+      text-decoration: none;
+      color: #3b82f6;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    a:hover {
+      color: #8b5cf6;
+      background: rgba(139, 92, 246, 0.1);
+      border-color: rgba(139, 92, 246, 0.2);
+      transform: translateX(-5px);
+    }
+
+    /* Tareas section styling */
+    div[th\:if] {
+      margin-top: 25px;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(71, 85, 105, 0.3);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 15px;
+    }
+
+    li {
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      background: rgba(59, 130, 246, 0.05);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    li:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateX(5px);
+    }
+
+    li span:first-child {
+      font-weight: 600;
+      color: #3b82f6;
+    }
+
+    li span:last-child {
+      margin-left: auto;
+      padding: 4px 12px;
+      background: rgba(139, 92, 246, 0.2);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .container {
+        margin: 20px;
+        padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      header {
+        padding: 25px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        margin: 15px;
+      }
+
+      input, textarea {
+        padding: 14px 16px;
+      }
+    }
+
+    /* Loading state for button */
+    .loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid transparent;
+      border-top: 2px solid #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Form validation styles */
+    input:invalid,
+    textarea:invalid {
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+
+    input:invalid:focus,
+    textarea:invalid:focus {
+      border-color: #ef4444;
+      box-shadow: 
+        0 0 0 3px rgba(239, 68, 68, 0.1),
+        0 0 20px rgba(239, 68, 68, 0.2);
+    }
+
+    input:valid,
+    textarea:valid {
+      border-color: rgba(34, 197, 94, 0.5);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1 th:text="${proyecto.id} != null ? 'Editar Proyecto' : 'Agregar Proyecto'"></h1>
+</header>
+<div class="container">
+  <!-- Usa la misma URL para nuevo y editar -->
+  <form th:action="@{${proyecto.id} != null ? '/proyectos/editar/' + ${proyecto.id} : '/proyectos/nuevo'}"
+        th:object="${proyecto}" method="post">
+
+     <input type="hidden" th:if="${proyecto.id}" th:field="*{id}"/>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="nombre">Nombre del Proyecto</label>
+        <div class="input-wrapper">
+          <input type="text" id="nombre" th:field="*{nombre}" placeholder="Nombre del proyecto" required/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <div class="input-wrapper">
+          <textarea id="descripcion" th:field="*{descripcion}" placeholder="Descripción del proyecto" required></textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="empleadoId">ID del Empleado</label>
+        <div class="input-wrapper">
+          <input type="number" id="empleadoId" th:field="*{empleadoId}" placeholder="ID del empleado" required/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tareas solo mostrar, no editar dinámicamente -->
+    <div th:if="${proyecto.tareas != null}">
+      <label>Tareas Asociadas</label>
+      <ul>
+        <li th:each="tarea : ${proyecto.tareas}">
+          <span th:text="${tarea.titulo}"></span>
+          <span th:text="${tarea.estado}"></span>
+        </li>
+      </ul>
+    </div>
+
+    <button type="submit" onclick="this.classList.add('loading')">💾 Guardar Proyecto</button>
+  </form>
+  <a th:href="@{/proyectos}">← Volver a lista</a>
+</div>
+
+<script>
+  // Remove loading state if form submission fails
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      const button = document.querySelector('button[type="submit"]');
+      if (button) button.classList.remove('loading');
+    }
+  });
+
+  // Add subtle animation on load
+  document.addEventListener('DOMContentLoaded', function() {
+    const container = document.querySelector('.container');
+    const header = document.querySelector('header');
+    
+    // Header animation
+    header.style.opacity = '0';
+    header.style.transform = 'translateY(-30px)';
+    
+    // Container animation
+    container.style.opacity = '0';
+    container.style.transform = 'translateY(30px)';
+    
+    setTimeout(() => {
+      header.style.transition = 'all 0.6s ease';
+      header.style.opacity = '1';
+      header.style.transform = 'translateY(0)';
+    }, 100);
+    
+    setTimeout(() => {
+      container.style.transition = 'all 0.6s ease';
+      container.style.opacity = '1';
+      container.style.transform = 'translateY(0)';
+    }, 300);
+  });
+
+  // Form validation enhancements
+  document.querySelectorAll('input, textarea').forEach(input => {
+    input.addEventListener('blur', function() {
+      if (this.checkValidity()) {
+        this.style.borderColor = 'rgba(34, 197, 94, 0.5)';
+      } else {
+        this.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+      }
+    });
+    
+    input.addEventListener('input', function() {
+      if (this.style.borderColor) {
+        this.style.borderColor = '';
+      }
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Agregar / Editar Empleado</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e1e2e 0%, #2d3748 100%);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background elements */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 20%;
+      right: 10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: float 6s ease-in-out infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    header {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(139, 92, 246, 0.9) 100%);
+      backdrop-filter: blur(20px);
+      color: #fff;
+      padding: 30px 20px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .header-subtitle {
+      margin-top: 8px;
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 400;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 40px auto;
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 60px rgba(59, 130, 246, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 1;
+      transform: translateY(0);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-5px);
+      box-shadow: 
+        0 30px 50px rgba(0, 0, 0, 0.4),
+        0 0 80px rgba(59, 130, 246, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 25px;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #e2e8f0;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px solid rgba(71, 85, 105, 0.5);
+      border-radius: 12px;
+      font-size: 16px;
+      color: #f8fafc;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    input::placeholder {
+      color: #64748b;
+      font-weight: 400;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 
+        0 0 0 3px rgba(59, 130, 246, 0.1),
+        0 0 20px rgba(59, 130, 246, 0.2);
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    input:hover {
+      border-color: rgba(71, 85, 105, 0.8);
+    }
+
+    /* Input icons */
+    .input-wrapper::before {
+      content: '';
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      opacity: 0.5;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .nombre-input::before {
+      content: '👤';
+      font-size: 16px;
+      right: 18px;
+    }
+
+    .cargo-input::before {
+      content: '💼';
+      font-size: 16px;
+      right: 18px;
+    }
+
+    .salario-input::before {
+      content: '💰';
+      font-size: 16px;
+      right: 18px;
+    }
+
+    .email-input::before {
+      content: '📧';
+      font-size: 16px;
+      right: 18px;
+    }
+
+    .button-group {
+      margin-top: 30px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      min-width: 150px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      border: none;
+      padding: 16px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 25px;
+      text-decoration: none;
+      color: #3b82f6;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .back-link::before {
+      content: '←';
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .back-link:hover {
+      color: #8b5cf6;
+      background: rgba(139, 92, 246, 0.1);
+      border-color: rgba(139, 92, 246, 0.2);
+      transform: translateX(-5px);
+    }
+
+    /* Success/Error messages */
+    .message {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: 500;
+      animation: slideIn 0.5s ease;
+    }
+
+    .message.success {
+      background: rgba(34, 197, 94, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .container {
+        margin: 20px;
+        padding: 30px 20px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      button {
+        min-width: 100%;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      header {
+        padding: 25px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        margin: 15px;
+      }
+
+      input {
+        padding: 14px 16px;
+      }
+    }
+
+    /* Loading state for button */
+    .loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid transparent;
+      border-top: 2px solid #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Form validation styles */
+    input:invalid {
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+
+    input:invalid:focus {
+      border-color: #ef4444;
+      box-shadow: 
+        0 0 0 3px rgba(239, 68, 68, 0.1),
+        0 0 20px rgba(239, 68, 68, 0.2);
+    }
+
+    input:valid {
+      border-color: rgba(34, 197, 94, 0.5);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Formulario Empleado</h1>
+  <p class="header-subtitle">Gestión de información de empleados</p>
+</header>
+
+<div class="container">
+  <form th:action="@{/empleados/nuevo}" method="post" th:object="${empleado}">
+    <input type="hidden" th:field="*{id}"/>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="nombre">Nombre Completo</label>
+        <div class="input-wrapper nombre-input">
+          <input type="text" id="nombre" th:field="*{nombre}" placeholder="Ingrese el nombre completo" required/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cargo">Cargo</label>
+        <div class="input-wrapper cargo-input">
+          <input type="text" id="cargo" th:field="*{cargo}" placeholder="Ingrese el cargo o posición" required/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="salario">Salario</label>
+        <div class="input-wrapper salario-input">
+          <input type="number" id="salario" th:field="*{salario}" placeholder="Ingrese el salario" min="0" step="0.01" required/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Correo Electrónico</label>
+        <div class="input-wrapper email-input">
+          <input type="email" id="email" th:field="*{email}" placeholder="ejemplo@empresa.com" required/>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button type="submit" onclick="this.classList.add('loading')">
+        💾 Guardar Empleado
+      </button>
+    </div>
+  </form>
+  
+  <a th:href="@{/home}" class="back-link">
+    Volver a inicio
+  </a>
+</div>
+
+<script>
+  // Remove loading state if form submission fails
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+      const button = document.querySelector('button[type="submit"]');
+      if (button) button.classList.remove('loading');
+    }
+  });
+
+  // Add subtle animation on load
+  document.addEventListener('DOMContentLoaded', function() {
+    const container = document.querySelector('.container');
+    const header = document.querySelector('header');
+    
+    // Header animation
+    header.style.opacity = '0';
+    header.style.transform = 'translateY(-30px)';
+    
+    // Container animation
+    container.style.opacity = '0';
+    container.style.transform = 'translateY(30px)';
+    
+    setTimeout(() => {
+      header.style.transition = 'all 0.6s ease';
+      header.style.opacity = '1';
+      header.style.transform = 'translateY(0)';
+    }, 100);
+    
+    setTimeout(() => {
+      container.style.transition = 'all 0.6s ease';
+      container.style.opacity = '1';
+      container.style.transform = 'translateY(0)';
+    }, 300);
+  });
+
+  // Form validation enhancements
+  document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('blur', function() {
+      if (this.checkValidity()) {
+        this.style.borderColor = 'rgba(34, 197, 94, 0.5)';
+      } else {
+        this.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+      }
+    });
+    
+    input.addEventListener('input', function() {
+      if (this.style.borderColor) {
+        this.style.borderColor = '';
+      }
+    });
+  });
+</script>
+</body>
+</html>

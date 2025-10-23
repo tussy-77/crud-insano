@@ -1,0 +1,15 @@
+com\miaplication\crud\service\ProyectoService.class
+com\miaplication\crud\entity\Proyecto$Tarea.class
+com\miaplication\crud\repository\ProyectoRepository.class
+com\miaplication\crud\controller\HomeController.class
+com\miaplication\crud\entity\Proyecto.class
+com\miaplication\crud\controller\ProyectoController.class
+com\miaplication\crud\controller\EmpleadoFormController.class
+com\miaplication\crud\controller\LoginController.class
+com\miaplication\crud\CrudApplication.class
+com\miaplication\crud\entity\Empleado.class
+com\miaplication\crud\repository\EmpleadoRepository.class
+com\miaplication\crud\export\EmpleadoExportService.class
+com\miaplication\crud\export\ProyectoExportService.class
+com\miaplication\crud\service\EmpleadoService.class
+com\miaplication\crud\config\SecurityConfig.class
